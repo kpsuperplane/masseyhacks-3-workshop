@@ -1,21 +1,25 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import List from "./List";
+import { map } from "./actions";
 import './App.css';
 
 class App extends Component {
+  addTodo(){
+    if(this.refs.input.value.length != 0){
+      this.props.addTodo(this.refs.input.value);
+      this.refs.input.value = "";
+    }
+  }
   render() {
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div className="app">
+        <h1 className="app-title">My Todo List</h1>
+        <List />
+        <input type="text" placeholder="Enter a todo" ref="input" className="add-todo-input" />
+        <button onClick={this.addTodo.bind(this)} className="add-todo-button">Add Todo</button>
       </div>
     );
   }
 }
 
-export default App;
+export default map(App);

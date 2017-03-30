@@ -1,0 +1,29 @@
+.listitem{
+    border:1px solid #000;
+    padding:0.7em 1.5em;
+    font-size:0.8em;
+    position:relative;
+    margin-bottom:1em;
+    overflow-x:hidden;
+    border-radius:3px;
+}
+.listitem:hover .listitem-remove{
+    transform:translateX(0);
+}
+.listitem-remove{
+    position:absolute;
+    right:0px;
+    top:0px;
+    border-radius:0px 3px 3px 0px;
+    background:#000;
+    color:#FFF;
+    padding:0.7em;
+    cursor:pointer;
+    border-style:none;
+    font-size:1em;
+    transform: translateX(100%);   
+    transition: transform 150ms;
+}
+.listitem-remove:focus{
+    outline:none;
+}
