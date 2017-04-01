@@ -4,7 +4,6 @@ export const todo_actions = {
 };
 
 export default function todoReducer (state = { todos: [] }, action) {
-    console.log(action);
     switch (action.type) {
         case todo_actions.ADD_TODO:
             state = { todos: [...state.todos, action.payload] };

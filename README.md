@@ -135,7 +135,7 @@ Unfortunately, not all browsers support it at this time, which is why we need to
 Secondly, React prefers to use a language called JSX - basically HTML inlined into JavaScript. As we will see, this presents us with some interesting challenges unto itself. 
 
 Now, let's take a look at `src/App.js`. You'll find the following: 
-```javascript
+```jsx
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
@@ -161,3 +161,296 @@ Note some interesting tidbits:
 - `class` is replaced with `className` because it's a reserved keyword
 - We imported `App.css` into a JavaScript file. This will be intelligently handled when everything is being converted into JavaScript
 - Ditto with `logo.png`. Not only are we importing it, we're putting it into a `src` property by using `{variable}` instead of double quotes!
+
+### React Philosophy
+
+React works on the idea of components - each of which contains its own state and components. It centralizes around a `render` function - a method that is called to figure out what to output to the html.
+
+#### States
+
+React elements have a local state, which store information for the current component. You can set their value later on with `this.setState`, as demonstrated below:
+
+```jsx
+import React, {Component} from 'react';
+class MyComponent extends Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            on: false
+        };
+    }
+    toggle(){
+        this.setState({on: !this.state.on});
+    }
+    render(){
+        return <button onClick={this.toggle.bind(this)}>{this.state.on ? "on": "off"}</button>
+    }
+}
+```
+
+#### Props
+
+React elements also take `props` that take information from the parent. They are essentially just custom attributes provided by React. 
+```jsx
+import React, {Component} from 'react';
+class MyComponent extends Component{
+    render(){
+        return <h1>{this.props.message}</h1>
+    }
+}
+// <MyComponent message="test" /> ==> <h1>test</h1>
+```
+
+### Redux
+
+With react comes along an entirely new idea for data - one way data binding. Take a look at the graphic below of the **flux architecture**:
+
+![Flux Architecture](document-resources/flux.png) 
+
+*Flux Architecture (Credits @ http://lgvalle.xyz/)*
+
+Redux works in a similar way, swapping out dispatches for *reducers*. Reducer functions take a state, an action, and spit out a new state.
+
+```js
+function myReducer(state={counter: 1}, action){
+    switch(action.type){
+        case "add":
+            return {counter: state.counter+1};
+        default:
+            return state;
+    }
+}
+``` 
+
+The idea is that with React and Redux, we can keep *one-way dataflow* and as a result have everything be *declarative*. Let's write some code. 
+
+First, hook up Redux.
+
+*src/index.js*
+```jsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+import './index.css';
+import { Provider } from 'react-redux'
+import { createStore } from 'redux'
+
+import todoReducer from "./reducers/todo";
+
+const store = createStore(todoReducer)
+
+ReactDOM.render(
+  <Provider store={store}><App /></Provider>,
+  document.getElementById('root')
+);
+```
+
+*src/index.css*
+```css
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+```
+
+*src/actions.js*
+```js
+import { connect } from "react-redux";
+import { todo_actions } from "./reducers/todo.js";
+
+const mapStateToProps = (state) => ({
+    todos: state.todos
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    addTodo: (content) => dispatch({type: todo_actions.ADD_TODO, payload: content}),
+    removeTodo: (index) => dispatch({type: todo_actions.REMOVE_TODO, payload: index})
+});
+
+export const map = (Component) => connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Component);
+```
+
+*src/reducers/todo.js*
+```js
+export const todo_actions = {
+  ADD_TODO: "add_todo",
+  REMOVE_TODO: "remove_todo"
+};
+
+export default function todoReducer (state = { todos: [] }, action) {
+    switch (action.type) {
+        case todo_actions.ADD_TODO:
+            state = { todos: [...state.todos, action.payload] };
+            return state;
+        case todo_actions.REMOVE_TODO:
+            const todos = state.todos;
+            todos.splice(action.payload, 1)
+            state = { todos: [...todos] };
+            return state;
+        default:
+            return state;
+    }
+}
+```
+
+*src/App.css* 
+```css
+.app{
+    width:400px;
+    margin:2em auto;
+}
+.app-title{
+    font-size:1.5em;
+}
+.add-todo-input{
+    display:block;
+    width:100%;
+    font-size:0.7em;
+    box-sizing:border-box;
+    padding:1em;
+    margin-top:2em;
+    border-radius:3px;
+    border:1px solid #00BFFF;
+}
+.add-todo-input:focus{
+    outline:none;
+}
+.add-todo-button{
+    border-radius:3px;
+    margin-top:0.5em;
+    background:#00BFFF;
+    color:#FFF;
+    border-style:none;
+    cursor:pointer;
+    display:block;
+    box-sizing:border-box;
+    padding:1em;
+    font-size:0.7em;
+    width:100%;
+    box-shadow:none;
+    box-shadow:0px 4px 10px rgba(0,0,0,0.05);
+    transition:all 200ms;
+
+}
+.add-todo-button:hover{
+    box-shadow:0px 10px 20px rgba(0,0,0,0.1);
+}
+.add-todo-button:active{
+    box-shadow:none;
+}
+.add-todo-button:focus{
+    outline:none;
+}
+```
+
+*src/App.js* 
+```jsx
+import React, { Component } from 'react';
+import List from "./List";
+import { map } from "./actions";
+import './App.css';
+
+class App extends Component {
+  addTodo(){
+    if(this.refs.input.value.length != 0){
+      this.props.addTodo(this.refs.input.value);
+      this.refs.input.value = "";
+    }
+  }
+  render() {
+    return (
+      <div className="app">
+        <h1 className="app-title">My Todo List</h1>
+        <List />
+        <input type="text" placeholder="Enter a todo" ref="input" className="add-todo-input" />
+        <button onClick={this.addTodo.bind(this)} className="add-todo-button">Add Todo</button>
+      </div>
+    );
+  }
+}
+
+export default map(App);
+```
+
+*src/List.js*
+```jsx
+import React, { Component } from 'react';
+import { map } from "./actions";
+import ListItem from "./ListItem";
+
+class List extends Component {
+  onClose(index){
+    this.props.removeTodo(index);
+  }
+  render() {
+    console.log(this.props);
+    return (
+      <div className="list">
+          {this.props.todos.map((item, index) => <ListItem 
+          key={item}
+          name={item} 
+          onClose={this.onClose.bind(this, index)} />)}
+      </div>
+    );
+  }
+}
+
+export default map(List);
+
+```
+
+*src/ListItem.css*
+```css
+.listitem{
+    border:1px solid #000;
+    padding:0.7em 1.5em;
+    font-size:0.8em;
+    position:relative;
+    margin-bottom:1em;
+    overflow-x:hidden;
+    border-radius:3px;
+}
+.listitem:hover .listitem-remove{
+    transform:translateX(0);
+}
+.listitem-remove{
+    position:absolute;
+    right:0px;
+    top:0px;
+    border-radius:0px 3px 3px 0px;
+    background:#000;
+    color:#FFF;
+    padding:0.7em;
+    cursor:pointer;
+    border-style:none;
+    font-size:1em;
+    transform: translateX(100%);   
+    transition: transform 150ms;
+}
+.listitem-remove:focus{
+    outline:none;
+}
+```
+
+*src/ListItem.js*
+```js
+import React, { Component } from 'react';
+import './ListItem.css';
+
+class List extends Component {
+  render() {
+    return (
+      <div className="listitem">
+          {this.props.name}
+          <button className="listitem-remove" onClick={this.props.onClose}>Done</button>
+      </div>
+    );
+  }
+}
+
+export default List;
+```

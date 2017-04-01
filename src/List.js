@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { map } from "./actions";
 import ListItem from "./ListItem";
-import './List.css';
 
 class List extends Component {
   onClose(index){
