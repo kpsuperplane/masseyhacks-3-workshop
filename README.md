@@ -95,3 +95,69 @@ Simply drop `transition: property speed;` in anywhere and your element will "tra
 
 Note: CSS Animations also exist, but are beyond the scope of this course. You may read about them here: 
 https://developer.mozilla.org/en-US/docs/Web/CSS/animation
+
+## JavaScript
+
+The fun part - maybe. This section goes over basic programming with React and Redux. Let's get started! First, make sure you have Node.JS and NPM installed. 
+
+### What is Node.JS and NPM? 
+
+**Node.JS:** JavaScript running on your computer instead of your browser. That's it. 
+
+**NPM:** NPM is the default package manager for Node.JS. Think of it as the "app store" for your javascript code. 
+
+If you don't have these installed, head over to https://nodejs.org/en/ and download the latest release! 
+
+### Getting started with Node.JS
+
+Pop open your terminal and type the following: 
+```bash
+npm install create-react-app -g
+```
+
+The above command will install [create-react-app](https://github.com/facebookincubator/create-react-app) - a utility that makes React development a lot easier. Once you have that installed, head over to your project directory of choice and enter the following:
+```bash
+create-react-app masseyhacks3
+```
+
+Wait a couple seconds, and a folder for Massey Hacks 3 should materialize. This will be our working directory from here on out. 
+
+Run `npm run start`, wait for your browser to popup with a spinning logo, and our magical unicorn ride is complete. 
+
+### An overview of ES6 and JSX 
+
+In case you've never worked with JavaScript before, let us first establish that it lacks many common features found in other languages - classes, imports, etc. 
+
+Luckily, the creators of JavaScript realized this a little while back and decided to add them in with ES6 - the 6th edition of the ECMAScript standard (what JavaScript is based off of). 
+
+Unfortunately, not all browsers support it at this time, which is why we need to use `npm` to convert it to a browser-friendly format for us. 
+
+Secondly, React prefers to use a language called JSX - basically HTML inlined into JavaScript. As we will see, this presents us with some interesting challenges unto itself. 
+
+Now, let's take a look at `src/App.js`. You'll find the following: 
+```javascript
+import React, { Component } from 'react';
+import logo from './logo.svg';
+import './App.css';
+
+class App extends Component {
+  render() {
+    return (
+      <div className="App">
+        <div className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <h2>Welcome to React</h2>
+        </div>
+        <p className="App-intro">
+          To get started, edit <code>src/App.js</code> and save to reload.
+        </p>
+      </div>
+    );
+  }
+}
+```
+
+Note some interesting tidbits:
+- `class` is replaced with `className` because it's a reserved keyword
+- We imported `App.css` into a JavaScript file. This will be intelligently handled when everything is being converted into JavaScript
+- Ditto with `logo.png`. Not only are we importing it, we're putting it into a `src` property by using `{variable}` instead of double quotes!
