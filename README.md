@@ -67,3 +67,31 @@ All this positioning will invariably lead to layering issues. This is resolved w
 
 One important thing to watch out for here is mixing `z-index`'s - applying `z-index` to a element *x* who's ancestors may already have a `z-index` applied. This creates a `stacking context`, which, in simple terms, means *x*'s `z-index` is only considered relative to that of sibling elements within the ancestor tag and makes no perceptible difference beyond that. 
 
+
+### Flexboxes
+
+Flexboxes take the traditional CSS model of positioning and throw it all out the window - as it turns out, placing a couple boxes side by side is way too hard the normal way. They're pretty easy to use: add `display:flex` to the container element and use the `flex` property on child elements to control ratios. For example, if you had 
+```html
+<div style="display:flex;">
+    <div style="flex:3"></div>
+    <div style="flex:7"></div>
+</div>
+```
+You would have two columns side by side with ratio 3:7. Note these values do not need to add up to 10.
+
+List of things you can specify:
+```css
+selector{
+    flex: flex-grow flex-shrink flex-basis|auto|initial|inherit;
+    display: flex;
+    flex-direction: row|row-reverse|column|column-reverse|initial|inherit;
+    flex-flow: flex-direction flex-wrap|initial|inherit;
+    flex-wrap: nowrap|wrap|wrap-reverse|initial|inherit;
+}
+```
+
+### CSS Transitions
+Simply drop `transition: property speed;` in anywhere and your element will "transition" (animate) accordingly when you change that property. To transition everything, use `transition: all speed;`. This is particularly useful for state transitions like `:hover` and  states powered by JavaScript applied classes (e.g. `element.toggleClass('active')`)
+
+Note: CSS Animations also exist, but are beyond the scope of this course. You may read about them here: 
+https://developer.mozilla.org/en-US/docs/Web/CSS/animation
